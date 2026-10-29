@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://cboard1234567"]
+
+[ext_resource type="Script" path="res://scripts/board_controller.gd" id="1_board"]
+[ext_resource type="Script" path="res://scripts/striker_controller.gd" id="2_striker"]
+
+[node name="CarromBoard" type="Node2D"]
+script = ExtResource("1_board")
+
+[node name="Striker" type="Area2D" parent="."]
+position = Vector2(640, 580)
+script = ExtResource("2_striker")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Striker"]
+
+[node name="CoinsContainer" type="Node2D" parent="."]
+
+[node name="PocketsContainer" type="Node2D" parent="."]

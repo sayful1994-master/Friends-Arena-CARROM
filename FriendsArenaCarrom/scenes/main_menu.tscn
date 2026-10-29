@@ -1,0 +1,87 @@
+[gd_scene load_steps=2 format=3 uid="uid://b123456789abc"]
+
+[ext_resource type="Script" path="res://scripts/game_manager.gd" id="1_gm"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.12, 0.08, 0.05, 1)
+
+[node name="Title" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -280.0
+offset_top = 40.0
+offset_right = 280.0
+offset_bottom = 110.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 48
+text = "FRIENDS ARENA - CARROM"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 115.0
+offset_right = 200.0
+offset_bottom = 145.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.85, 0.75, 0.55, 1)
+theme_override_font_sizes/font_size = 20
+text = "Real-Time Local Multiplayer by Sayful Islam"
+horizontal_alignment = 1
+
+[node name="ButtonContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 200.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="BtnPractice" type="Button" parent="ButtonContainer"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Solo Practice"
+
+[node name="BtnTwoPlayer" type="Button" parent="ButtonContainer"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "2-Player Match"
+
+[node name="BtnFourPlayer" type="Button" parent="ButtonContainer"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "4-Player Team Match"
+
+[node name="BtnMultiplayer" type="Button" parent="ButtonContainer"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "Local Wi-Fi / Hotspot Lobby"
+
+[node name="BtnExit" type="Button" parent="ButtonContainer"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "Exit Game"
