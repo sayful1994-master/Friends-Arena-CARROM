@@ -1,0 +1,6 @@
+; Engine configuration file for Friends Arena - Carrom
+config_version=5
+[application]
+config/name="Friends Arena – Carrom"
+config/version="1.0.0"
+run/main_scene="res://scenes/main_menu.tscn"
