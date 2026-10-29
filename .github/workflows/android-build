@@ -1,0 +1,2 @@
+name: Android APK Build Pipeline
+on: [workflow_dispatch, push]
