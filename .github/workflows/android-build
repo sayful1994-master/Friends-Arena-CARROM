@@ -1,2 +1,89 @@
 name: Android APK Build Pipeline
-on: [workflow_dispatch, push]
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.3"
+  GODOT_RELEASE: "stable"
+  PACKAGE_NAME: "com.friendsarena.carrom"
+
+jobs:
+  build-android-apk:
+    name: Build & Validate Android Debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Set up Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android Build Tools & Platforms
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0" "cmdline-tools;latest"
+          yes | sdkmanager --licenses || true
+
+      - name: Download and Cache Godot 4 Engine & Export Templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip -O godot.zip
+          unzip -q godot.zip
+          mv Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+          rm godot.zip
+
+          # Download Android export templates
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz -O templates.tpz
+          unzip -q templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
+          rm -rf templates templates.tpz
+
+      - name: Generate Android Debug Keystore
+        run: |
+          mkdir -p ~/.android
+          keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -validity 9999 -deststoretype pkcs12
+
+      - name: Godot Headless Resource Import
+        run: |
+          echo "Importing project assets in Godot headless mode..."
+          godot --headless --editor --quit --path FriendsArenaCarrom || true
+
+      - name: Run Automated Godot GDScript Unit Tests
+        run: |
+          echo "Running Carrom Rules, Scoring, Turn, and Protocol Test Suites..."
+          godot --headless --script tests/run_tests.gd --path FriendsArenaCarrom
+
+      - name: Export Android Debug APK
+        run: |
+          mkdir -p FriendsArenaCarrom/build
+          godot --headless --export-debug "Android" build/FriendsArena-Carrom-debug.apk --path FriendsArenaCarrom
+
+      - name: Verify APK Integrity
+        run: |
+          if [ ! -s FriendsArenaCarrom/build/FriendsArena-Carrom-debug.apk ]; then
+            echo "ERROR: FriendsArena-Carrom-debug.apk is missing or zero bytes!" >&2
+            exit 1
+          fi
+          echo "SUCCESS: APK created with size $(du -h FriendsArenaCarrom/build/FriendsArena-Carrom-debug.apk | cut -f1)"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FriendsArena-Carrom-debug-apk
+          path: FriendsArenaCarrom/build/FriendsArena-Carrom-debug.apk
+          if-no-files-found: error
+          retention-days: 14
